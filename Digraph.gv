@@ -1,10 +1,16 @@
 digraph {
 	graph [rankdir=LR]
-	1813566003744 [label="{ data 1.0000 | grad 0.0000 }" shape=record]
-	1813566009888 [label="{ data 2.0000 | grad 0.0000 }" shape=record]
-	1813565849168 [label="{ data 3.0000 | grad 0.0000 }" shape=record]
-	"1813565849168add" [label=add]
-	"1813565849168add" -> 1813565849168
-	1813566003744 -> "1813565849168add"
-	1813566009888 -> "1813565849168add"
+	2412439846976 [label="{ data 3.0000 | grad 1.0000 }" shape=record]
+	"2412439846976add" [label=add]
+	"2412439846976add" -> 2412439846976
+	2412439850624 [label="{ data 6.0000 | grad 1.0000 }" shape=record]
+	"2412439850624add" [label=add]
+	"2412439850624add" -> 2412439850624
+	2412439707872 [label="{ data 2.0000 | grad 1.0000 }" shape=record]
+	2412439707392 [label="{ data 3.0000 | grad 1.0000 }" shape=record]
+	2412439707920 [label="{ data 1.0000 | grad 1.0000 }" shape=record]
+	2412439707920 -> "2412439846976add"
+	2412439707392 -> "2412439850624add"
+	2412439846976 -> "2412439850624add"
+	2412439707872 -> "2412439846976add"
 }
