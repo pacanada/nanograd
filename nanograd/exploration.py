@@ -1,5 +1,6 @@
 
 from __future__ import annotations
+import math
 
 from graph_utils import draw_dot
 
@@ -8,7 +9,7 @@ class Value:
         self.data = data
         self._prev = _children
         self._op = _op
-        self.grad = None
+        self.grad = 0 # init at 0, not none
         self.label=label
         self._backprop=lambda _: None
 
@@ -16,40 +17,46 @@ class Value:
         return f"Value({self.data})"
     
     def __add__(self, other: Value)-> Value:
-        
         def _backprop(self):
-            self._prev[0].grad = 0 if self._prev[0].grad is None else self._prev[0].grad 
-            self._prev[1].grad = 0 if self._prev[1].grad is None else self._prev[1].grad 
-            self._prev[0].grad += self.grad
-            self._prev[1].grad += self.grad
+            for child in self._prev:
+                child.grad += self.grad
 
-        out = Value(self.data + other.data, (self,other), _op="add")
+        out = Value(self.data + other.data, (self,other), _op="+")
         out._backprop = _backprop
 
         return out
     
     def __mul__(self, other: Value)->Value:
-        
         def _backprop(self):
-            self._prev[0].grad = 0 if self._prev[0].grad is None else self._prev[0].grad 
-            self._prev[1].grad = 0 if self._prev[1].grad is None else self._prev[1].grad 
+            # can we just substitute _prev[0] for self??
             self._prev[0].grad += self.grad*self._prev[1].data
             self._prev[1].grad += self.grad*self._prev[0].data
-        out = Value(self.data*other.data, (self, other), _op="mul")
+        out = Value(self.data*other.data, (self, other), _op="*")
         out._backprop = _backprop
         return out
+    
+    def __pow__(self, other):
+        def _backprop(self):
+            # TODO: fix, a bit complex to follow dc/da = b*a^(b-1) being c = a^b
+            self._prev[0].grad += self.grad*self._prev[1].data*self._prev[0].data**(self._prev[1].data-1)
+            # dc/db = a^b log(a) being c=a^b
+            self._prev[1].grad += self.grad*self._prev[0].data**self._prev[1].data*math.log(self._prev[0].data)
+        out = Value(self.data**other.data, (self, other), _op=f"**{other.data}")
+        out._backprop = _backprop
+        return out
+
     
     def relu(self)-> Value:
         raise NotImplementedError
     
-    def backward(self):
-        if self.grad is None:
+    def backward(self, last_node = True):
+        if last_node:
             self.grad = 1
 
         self._backprop(self)
 
         for value in self._prev:
-            value.backward()
+            value.backward(last_node=False)
     
 
 if __name__=="__main__":

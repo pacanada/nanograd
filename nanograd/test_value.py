@@ -24,3 +24,9 @@ def test_two_grad():
     assert a.grad == 2 
     assert b.grad == 1
     assert c.grad == 1  
+
+def test_pow():
+    a = Value(2)
+    b = a**Value(3)
+    b.backward()
+    assert a.grad == 3*2**2
