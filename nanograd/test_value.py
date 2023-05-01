@@ -30,3 +30,20 @@ def test_pow():
     b = a**Value(3)
     b.backward()
     assert a.grad == 3*2**2
+
+def test_div():
+    a = Value(2)
+    b = Value(3)
+    c = a/b
+    c.backward()
+    assert a.grad == 1/3
+    # dc/db = a*b^(-2)*(-1)
+    assert b.grad == -2*3**-2
+
+def test_substract():
+    a = Value(2)
+    b = Value(3)
+    c = a-b
+    c.backward()
+    assert a.grad == 1
+    assert b.grad == -1

@@ -40,10 +40,15 @@ class Value:
             # TODO: fix, a bit complex to follow dc/da = b*a^(b-1) being c = a^b
             self._prev[0].grad += self.grad*self._prev[1].data*self._prev[0].data**(self._prev[1].data-1)
             # dc/db = a^b log(a) being c=a^b
-            self._prev[1].grad += self.grad*self._prev[0].data**self._prev[1].data*math.log(self._prev[0].data)
+            #self._prev[1].grad += self.grad*self._prev[0].data**self._prev[1].data*math.log(self._prev[0].data)
         out = Value(self.data**other.data, (self, other), _op=f"**{other.data}")
         out._backprop = _backprop
         return out
+    
+    def __truediv__(self, other):
+        return self*other**Value(-1)
+    def __sub__(self, other):
+        return self+other*Value(-1)
 
     
     def relu(self)-> Value:
