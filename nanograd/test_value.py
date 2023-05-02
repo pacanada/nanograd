@@ -1,4 +1,4 @@
-from exploration import Value
+from engine import Value
 def test_grad_simple():
     a = Value(1.0, label="a")
     b = Value(2.0, label="b")
@@ -47,3 +47,14 @@ def test_substract():
     c.backward()
     assert a.grad == 1
     assert b.grad == -1
+
+def test_relu():
+    a = Value(2)
+    b = a.relu()
+    b.backward()
+    assert a.grad == 1
+
+    c = Value(-1)
+    d = c.relu()
+    d.backward()
+    assert c.grad == 0
