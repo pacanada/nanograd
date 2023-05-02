@@ -1,4 +1,14 @@
+from typing import Callable
 from engine import Value
+
+def compute_derivative(func: Callable, var_kargs: dict, var_name: str, h: float = 1e-5) -> float:
+    """ Helper function to compute derivative of a function"""
+    out1 = func(**var_kargs)
+    var_kargs[var_name] += h 
+    out2 = func(**var_kargs)
+    return (out2-out1)/h
+
+
 def test_grad_simple():
     a = Value(1.0, label="a")
     b = Value(2.0, label="b")
@@ -58,3 +68,17 @@ def test_relu():
     d = c.relu()
     d.backward()
     assert c.grad == 0
+
+
+def test_more_complex_functions():
+    eps = 1e-5
+    f = lambda x,y,z,t: (x*y + x**2)*z + (t*z*x)
+
+    a, b, c, d = Value(5), Value(3), Value(-1), Value(6)
+    out_autograd = f(x=a, y=b, z=c, t=d)
+    out_autograd.backward()
+
+    for value, var in zip([a,b,c, d], ["x", "y", "z", "t"]):
+        diff_derivative = value.grad/compute_derivative(f, {"x":5, "y":3, "z":-1, "t": 6}, var) 
+        assert 1-eps < diff_derivative and 1+eps > diff_derivative
+
