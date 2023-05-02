@@ -63,7 +63,7 @@ class Value:
 
     
     def relu(self)-> Value:
-        out = Value(self.data if self.data > 0 else 0, (self, ), _op="relu")
+        out = Value(self.data if self.data > 0 else 0, (self, ), _op="ReLU")
         def _backprop(self):
             # TODO: fix, a bit complex to follow dc/da = b*a^(b-1) being c = a^b
             self._prev[0].grad += self.grad if self.data > 0 else 0

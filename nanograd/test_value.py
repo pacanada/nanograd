@@ -78,7 +78,7 @@ def test_more_complex_functions():
     out_autograd = f(x=a, y=b, z=c, t=d)
     out_autograd.backward()
 
-    for value, var in zip([a,b,c, d], ["x", "y", "z", "t"]):
+    for value, var in zip([a,b,c,d], ["x", "y", "z", "t"]):
         diff_derivative = value.grad/compute_derivative(f, {"x":5, "y":3, "z":-1, "t": 6}, var) 
         assert 1-eps < diff_derivative and 1+eps > diff_derivative
 
