@@ -67,6 +67,11 @@ class Value:
     def __rsub__(self, other): # other + self
         return self+other*-1
 
+    def __rmul__(self, other): # other * self
+        return self * other
+
+    def __rtruediv__(self, other): # other / self
+        return other * self**-1
     
     def relu(self)-> Value:
         out = Value(self.data if self.data > 0 else 0, (self, ), _op="ReLU")

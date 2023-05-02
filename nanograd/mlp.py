@@ -11,10 +11,12 @@ class Neuron:
         self.b = Value(np.random.uniform(-1,1))
     def __call__(self, x):
         # including relu
-        return (self.w*x + self.b).relu()
+        #return (self.w*x + self.b).relu()
+        return (self.w*x).relu()
 
     def parameters(self)->list[Value]:
-        return [self.w]+[self.b]
+        #return [self.w]+[self.b]
+        return [self.w]
 
 class Layer:
     def __init__(self, d_in: int, d_out: int):
@@ -43,4 +45,4 @@ class MLP:
 
     def zero_grad(self):
         for p in self.parameters():
-            p.grad=0
+            p.grad = 0
