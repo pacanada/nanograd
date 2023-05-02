@@ -61,6 +61,12 @@ class Value:
     def __sub__(self, other:int | float | Value)-> Value:
         return self+other*-1
 
+    def __radd__(self, other): # other + self
+        return self + other
+
+    def __rsub__(self, other): # other + self
+        return self+other*-1
+
     
     def relu(self)-> Value:
         out = Value(self.data if self.data > 0 else 0, (self, ), _op="ReLU")

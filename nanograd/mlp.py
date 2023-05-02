@@ -44,36 +44,3 @@ class MLP:
     def zero_grad(self):
         for p in self.parameters():
             p.grad=0
-
-class SGD:
-    def __init__(self, params: list[Value], lr: float=0.1):
-        self.params = params
-        self.lr = lr
-    def step(self):
-        for p in self.params:
-            p.data -= self.lr*p.grad
-
-def mse(output: list[Value], target: list[Value])-> Value:
-    if len(output)!=len(target):
-        raise Exception(f"Output size ({len(output)}) and target size ({len(target)}) does match!")
-    # good old mse
-    loss = sum([(t-i)**2 for t, i in zip(target, output)])/len(output)
-    return loss
-
-
-
-mlp = MLP((50,50,2))
-optim = SGD(mlp.parameters(), 0.01)
-
-
-for i in range(10):
-    out = mlp([1 for _ in range(50)])
-    mlp.zero_grad()
-    loss = mse(out, [2,2])
-
-    loss.backward()
-    optim.step()
-
-    print(loss)
-
-
