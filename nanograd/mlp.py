@@ -3,8 +3,8 @@ import random
 import numpy as np
 from engine import Value
 
-np.random.seed(1337)
-random.seed(1337)
+#np.random.seed(1337)
+#random.seed(1337)
 class Neuron:
     def __init__(self):
         self.w = Value(np.random.uniform(-1,1))

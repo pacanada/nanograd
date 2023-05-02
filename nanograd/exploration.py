@@ -67,7 +67,7 @@ optim = SGD(mlp.parameters(), 0.01)
 
 
 for i in range(10):
-    out = mlp([1 for _ in range(50)])
+    out = mlp([_ for _ in range(50)])
     mlp.zero_grad()
     loss = mse(out, [2,2])
 
