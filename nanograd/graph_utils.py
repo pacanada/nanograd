@@ -12,14 +12,14 @@ def trace(root):
     build(root)
     return nodes, edges
 
-def draw_dot(root, format='png', rankdir='LR'):
+def draw_dot(root, filename, format='png', rankdir='LR'):
     """
     format: png | svg | ...
     rankdir: TB (top to bottom graph) | LR (left to right)
     """
     assert rankdir in ['LR', 'TB']
     nodes, edges = trace(root)
-    dot = Digraph(format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
+    dot = Digraph(filename=filename, format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
     
     for n in nodes:
         dot.node(name=str(id(n)), label = "{ %s | data %.4f | grad %.4f }" % (n.label, n.data, n.grad), shape='record')

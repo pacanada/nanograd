@@ -7,17 +7,18 @@ import matplotlib.pyplot as plt
 #import random
 import numpy as np
 from engine import Value
+from graph_utils import draw_dot
 # it has to be in the same file, what is that!!??
 np.random.seed(1337)
 random.seed(1337)
 class Neuron:
     def __init__(self, dim_in: int):
         self.w = [Value(np.random.uniform(-1,1)) for _ in range(dim_in)]
-        self.b = Value(np.random.uniform(-1,1))
+        self.b = Value(1.3)#Value(np.random.uniform(-1,1)) #Value(0)
     def __call__(self, x: list[Value]):
         # including relu
-        return sum([wi*xi for wi, xi in zip(self.w, x)]) + self.b
-        #return (sum([wi*xi for wi, xi in zip(self.w, x)]) + self.b).relu()
+        #return sum([wi*xi for wi, xi in zip(self.w, x)]) + self.b
+        return sum((wi*xi for wi, xi in zip(self.w, x)), self.b).relu()
 
     def parameters(self)->list[Value]:
         return self.w+[self.b]
@@ -68,16 +69,22 @@ def mse(output: list[Value], target: list[Value])-> Value:
     return loss
 
 N = 1000
-N_ITER = 100
+N_ITER = 500
 SEQ_SIZE = 1
-BATCH_SIZE = 50
+BATCH_SIZE = 1
+PLOT = True
+lr = 0.1
 loss_l = []
-x = np.linspace(0,10*np.pi, N)
-y = np.sin(x)
+f = lambda x: x**2
+x = np.linspace(0,10, N)
+x_test = np.linspace(10,20, N)
+y = f(x) #np.sin(x)
+y_test = f(x_test)
 
 
-mlp = MLP((SEQ_SIZE,5,5,5,SEQ_SIZE))
-optim = SGD(mlp.parameters(), 0.00001)
+mlp = MLP((SEQ_SIZE,1,SEQ_SIZE))
+print("Number of params ", len(mlp.parameters()))
+optim = SGD(mlp.parameters(), lr)
 
 for i in range(N_ITER):
     #idx = np.random.randint(N, size=SEQ_SIZE)
@@ -87,23 +94,40 @@ for i in range(N_ITER):
     out = list(map(mlp, inputs))
     out = [i for j in out for i in j]
     #out=mlp(x[idx])
+    
+    # data_loss = sum([(t-i)**2 for t, i in zip(y[idx], out)])/len(out)
+    # alpha = 1e-4
+    # reg_loss = alpha * sum((p*p for p in mlp.parameters()))
+    # loss = data_loss+reg_loss
+    #loss = sum([(t-i)**2 for t, i in zip(y[idx], out)])/len(out)
+    loss = mse(out, y[idx])
     mlp.zero_grad()
-    loss = sum([(t-i)**2 for t, i in zip(y[idx], out)])/len(out)
-    #loss = mse(out, y[idx])
-
+    if PLOT:
+        graph = draw_dot(loss, "loss_before", "svg")
+        graph.render()
     loss.backward()
-    optim.step()
+    #lr = 1.0 - 0.9*i/100
+    for p in mlp.parameters():
+        p.data -= lr * p.grad
+    #optim.step()
 
     print(loss)
     loss_l.append(loss.data)
+    if PLOT:
+        graph = draw_dot(loss, "loss_after", "svg")
+        graph.render()
+        break
 print("For 2 we have ", mlp([2]))
 plt.plot(np.log(loss_l))
 plt.show()
 
-plt.plot(x, [i[0].data for i in list(map(mlp,[[x0] for x0 in x]))])
+plt.plot(x_test, [i[0].data for i in list(map(mlp,[[x0] for x0 in x_test]))], label="pred")
+plt.plot(x_test, y_test, label="target")
+plt.legend()
 plt.show()
 
 plt.plot(x[0:SEQ_SIZE], y[0:SEQ_SIZE], label="true")
+
 print([out.data for out in mlp(x[0:SEQ_SIZE])])
 # plt.plot(x[0:SEQ_SIZE], [out.data for out in mlp(x[0:SEQ_SIZE])], label="pred")
 # plt.legend()
