@@ -1,5 +1,5 @@
 from typing import Callable
-from engine import Value
+from nanograd.engine import Value
 
 def compute_derivative(func: Callable, var_kargs: dict, var_name: str, h: float = 1e-5) -> float:
     """ Helper function to compute derivative of a function"""

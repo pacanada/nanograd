@@ -1,7 +1,6 @@
 
-import random
 import numpy as np
-from engine import Value
+from nanograd.engine import Value
 
 #np.random.seed(1337)
 #random.seed(1337)
