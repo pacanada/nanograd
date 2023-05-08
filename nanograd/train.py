@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from engine import Value
 from graph_utils import draw_dot
-# it has to be in the same file, what is that!!?? In pytorch wi we add relu it does not work either
 np.random.seed(1337)
 random.seed(1337)
 
