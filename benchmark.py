@@ -44,9 +44,9 @@ def mse(output: list[Value], target: list[Value])-> Value:
 def get_data(config:Config):
     """Simple x^2 transformation.
     We dont use test set since we are just benchmarking if the mlp can 
-    adjust to sinusoidal signal and we are not interested on the performance
+    adjust to the curve and we are not interested on the performance
     """
-    f = lambda x: x**2#np.sin(x)
+    f = lambda x: x**2
     #f = lambda x: np.sin(x)
     x = np.linspace(0,10, config.N)
     #x = np.linspace(0,10*np.pi, config.N)
@@ -68,7 +68,7 @@ def main(config: Config):
     loss_f = mse
     loss_f_torch = torch.nn.MSELoss()
 
-    x,y = get_data(config)
+    x, y = get_data(config)
 
     for i in range(config.N_ITER):
         # Same idx for both models
@@ -99,14 +99,18 @@ def main(config: Config):
             print(f"{i}: Nanograd mlp loss: {loss.data:.2f}. Pytorch mlp loss: {loss_torch.detach().item():.2f}")
             loss_l.append(loss.data)
             loss_l_torch.append(loss_torch.detach().item())
+
+    # Time
     print(f"Nanograd training: {time_elapsed:.2f}s, Torch training: {time_elapsed_torch:.2f}s")
+    # Losses
     plt.plot(np.log(loss_l), label="Nanograd loss")
     plt.plot(np.log(loss_l_torch), label="Pytorch loss")
     plt.legend()
     plt.xlabel("Iterations")
-    plt.ylabel(r"log (loss)")
+    plt.ylabel("log (loss)")
     plt.savefig("loss.png")
     plt.show()
+    # Predictions
     plt.plot(x, y, "k--", label="target")
     plt.plot(x, [i[0].data for i in list(map(mlp,[[x0] for x0 in x]))], label="nanograd")
     plt.plot(x, mlp_torch(torch.tensor(x, dtype=torch.float32).view(-1,1)).detach().numpy(), label="pytorch")
